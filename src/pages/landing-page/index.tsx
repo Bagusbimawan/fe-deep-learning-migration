@@ -1,30 +1,44 @@
 import { useState } from "react";
 import biglogo from "../../../public/logo-big.png";
 import devider from "../../../public/divider.png";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
+import Swal from "sweetalert2";
+import { useAuthStore } from "@/store/useAuthStore";
+interface Register {
+  username: string;
+  email: string;
+  password: string;
+  phone:string
+}
 
 interface User {
-  email: string;
   username: string;
   password: string;
 }
 
 export default function LandingPage() {
+  const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [user, setUser] = useState<User>({
-    email: "",
+  const [login, setlogin] = useState<User>({
     username: "",
     password: "",
   });
 
+  const [register, setregister] = useState<Register>({
+    email: "",
+    username: "",
+    password: "",
+    phone:""
+  });
+
   const backendUrl = process.env.NEXT_PUBLIC_BE_URL;
-  console.log(backendUrl);
+  // console.log(backendUrl);
 
   const openLoginModal = () => setLoginModalOpen(true);
   const closeLoginModal = () => setLoginModalOpen(false);
@@ -37,39 +51,57 @@ export default function LandingPage() {
     closeLoginModal();
   };
 
-  const handleRegister = () => {
-    axios
-      .post(`${backendUrl}/register`, user)
-      .then((res) => {
-        console.log("Registration successful:", res.data);
-        setErrorMessage(""); // Clear any previous error messages
-        closeSignUpModal();
-      })
-      .catch((err) => {
-        console.error("There was an error registering!", err);
-        setErrorMessage(err.response?.data?.message || "Registration failed.");
+  const handleRegister = async () => {
+    try {
+      const response = await axios.post(`${backendUrl}/register`, register);
+      console.log(response.data);
+      Swal.fire({
+        text: "Register Success",
+        icon: "success",
       });
+      window.location.reload();
+    } catch (error: any) {
+      console.log(error);
+      Swal.fire({
+        text: error.response.data.message,
+        icon: "error",
+      });
+    }
   };
 
-  // const handleLogin = () => {
-  //   axios
-  //     .post(`${backendUrl}/login`, user)
-  //     .then((res) => {
-  //       const token = res.data.token;
-  //       Cookies.set("jwt", token);
-  //       console.log("Login successful:", res.data);
-  //       router.push("/home"); // Redirect after login
-  //       setErrorMessage('');
-  //     })
-  //     .catch((err) => {
-  //       console.error("There was an error logging in!", err);
-  //       setErrorMessage(err.response?.data?.message || 'Your username or password might be wrong');
-  //     });
-  // };
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/login", {
+        Username: login.username,
+        Password: login.password,
+      });
+
+      const { token, Username, Email, ID } = response.data.data;
+      console.log(setUser);
+
+      // Store in Zustand
+      setUser({ Username, Email, token, ID });
+      // Also keep token in localStorage for persistence
+      localStorage.setItem("jwt", token);
+
+      Swal.fire({
+        text: "succes login",
+        icon: "success",
+      });
+      router.push("/home");
+    } catch (error) {
+      setErrorMessage("Login failed");
+      console.log(error);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setUser((prev) => ({
+    setlogin((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setregister((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -117,7 +149,7 @@ export default function LandingPage() {
                   type="text"
                   placeholder="Type your username here"
                   name="username"
-                  value={user.username}
+                  value={login.username}
                   onChange={handleInputChange}
                   className="border border-[#A4A4A4] rounded-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                 />
@@ -128,14 +160,14 @@ export default function LandingPage() {
                   type="password"
                   placeholder="Must have at least 8 characters"
                   name="password"
-                  value={user.password}
+                  value={login.password}
                   onChange={handleInputChange}
                   className="border border-[#A4A4A4] rounded-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                 />
               </div>
               <button
                 className="font-freeman bg-gradient-to-r from-blue-500 to-blue-900 text-white w-full rounded-md py-1 mt-4"
-                // onClick={handleLogin}
+                onClick={handleLogin}
               >
                 Log In
               </button>
@@ -172,7 +204,7 @@ export default function LandingPage() {
                   type="email"
                   placeholder="name@example.com"
                   name="email"
-                  value={user.email}
+                  value={register.email}
                   onChange={handleInputChange}
                   className="border border-[#A4A4A4] rounded-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                 />
@@ -183,7 +215,7 @@ export default function LandingPage() {
                   type="text"
                   placeholder="Username must be unique"
                   name="username"
-                  value={user.username}
+                  value={register.username}
                   onChange={handleInputChange}
                   className="border border-[#A4A4A4] rounded-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                 />
@@ -194,7 +226,18 @@ export default function LandingPage() {
                   type="password"
                   placeholder="Must have at least 8 characters"
                   name="password"
-                  value={user.password}
+                  value={register.password}
+                  onChange={handleInputChange}
+                  className="border border-[#A4A4A4] rounded-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label >Number phone</label>
+                <input
+                  type="text"
+                  placeholder="Number phone"
+                  name="phone"
+                  value={register.phone}
                   onChange={handleInputChange}
                   className="border border-[#A4A4A4] rounded-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                 />
