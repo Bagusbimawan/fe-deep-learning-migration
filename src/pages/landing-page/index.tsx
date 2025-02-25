@@ -10,7 +10,7 @@ interface Register {
   username: string;
   email: string;
   password: string;
-  phone:string
+  phone: string;
 }
 
 interface User {
@@ -23,7 +23,6 @@ export default function LandingPage() {
   const router = useRouter();
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
   const [login, setlogin] = useState<User>({
     username: "",
@@ -34,7 +33,7 @@ export default function LandingPage() {
     email: "",
     username: "",
     password: "",
-    phone:""
+    phone: "",
   });
 
   const backendUrl = process.env.NEXT_PUBLIC_BE_URL;
@@ -76,8 +75,10 @@ export default function LandingPage() {
         Password: login.password,
       });
 
-      const { token, Username, Email, ID } = response.data.data;
-      console.log(setUser);
+      console.log(response.data); // Log the response to inspect its structure
+
+      const token = response.data.token;
+      const { Username, Email, ID } = response.data.data; // Ensure this matches the response structure
 
       // Store in Zustand
       setUser({ Username, Email, token, ID });
@@ -85,12 +86,15 @@ export default function LandingPage() {
       localStorage.setItem("jwt", token);
 
       Swal.fire({
-        text: "succes login",
+        text: "success login",
         icon: "success",
       });
       router.push("/home");
-    } catch (error) {
-      setErrorMessage("Login failed");
+    } catch (error: any) {
+      Swal.fire({
+        text: error.response.data.message,
+        icon: "error",
+      });
       console.log(error);
     }
   };
@@ -136,14 +140,14 @@ export default function LandingPage() {
 
       {isLoginModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-black float-start p-6 w-[30%] rounded-3xl">
+          <div className="bg-black p-6 w-full max-w-md mx-4 rounded-3xl">
             <div className="pb-4">
               <label className="text-white font-freeman text-3xl">
                 Log in or Sign Up
               </label>
             </div>
-            <div className="bg-white w-full rounded-lg px-6 pt-4 pb-20">
-              <div className="flex flex-col">
+            <div className="bg-white w-full rounded-lg px-6 pt-4 pb-8">
+              <div className="flex flex-col mb-4">
                 <label htmlFor="username">Username</label>
                 <input
                   type="text"
@@ -154,7 +158,7 @@ export default function LandingPage() {
                   className="border border-[#A4A4A4] rounded-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                 />
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col mb-4">
                 <label htmlFor="password">Password</label>
                 <input
                   type="password"
@@ -166,18 +170,18 @@ export default function LandingPage() {
                 />
               </div>
               <button
-                className="font-freeman bg-gradient-to-r from-blue-500 to-blue-900 text-white w-full rounded-md py-1 mt-4"
+                className="font-freeman bg-gradient-to-r from-blue-500 to-blue-900 text-white w-full rounded-md py-2 mt-4"
                 onClick={handleLogin}
               >
                 Log In
               </button>
-              {errorMessage && (
-                <div className="text-red-500">{errorMessage}</div>
-              )}
-              <label className="font-afacad">Don't have an account yet?</label>
+
+              <label className="font-afacad mt-4 block text-center">
+                Don't have an account yet?
+              </label>
               <button
                 onClick={toSignUp}
-                className="font-freeman text-black w-full rounded-md py-1 mt-4 border border-[#B9B9B9]"
+                className="font-freeman text-black w-full rounded-md py-2 mt-2 border border-[#B9B9B9]"
               >
                 Create an Account
               </button>
@@ -191,14 +195,14 @@ export default function LandingPage() {
 
       {isSignUpModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-black float-start p-6 w-[30%] rounded-3xl">
+          <div className="bg-black p-6 w-full max-w-md mx-4 rounded-3xl">
             <div className="pb-4">
               <label className="text-white font-freeman text-3xl">
                 Create an Account
               </label>
             </div>
-            <div className="bg-white w-full rounded-lg px-6 pt-4 pb-20">
-              <div className="flex flex-col">
+            <div className="bg-white w-full rounded-lg px-6 pt-4 pb-8">
+              <div className="flex flex-col mb-4">
                 <label htmlFor="email">Email</label>
                 <input
                   type="email"
@@ -209,7 +213,7 @@ export default function LandingPage() {
                   className="border border-[#A4A4A4] rounded-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                 />
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col mb-4">
                 <label htmlFor="username">Username</label>
                 <input
                   type="text"
@@ -220,7 +224,7 @@ export default function LandingPage() {
                   className="border border-[#A4A4A4] rounded-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                 />
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col mb-4">
                 <label htmlFor="password">Password</label>
                 <input
                   type="password"
@@ -231,8 +235,8 @@ export default function LandingPage() {
                   className="border border-[#A4A4A4] rounded-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                 />
               </div>
-              <div className="flex flex-col">
-                <label >Number phone</label>
+              <div className="flex flex-col mb-4">
+                <label>Number phone</label>
                 <input
                   type="text"
                   placeholder="Number phone"
@@ -244,13 +248,10 @@ export default function LandingPage() {
               </div>
               <button
                 onClick={handleRegister}
-                className="font-freeman bg-gradient-to-r from-blue-500 to-blue-900 text-white w-full rounded-md py-1 mt-4"
+                className="font-freeman bg-gradient-to-r from-blue-500 to-blue-900 text-white w-full rounded-md py-2 mt-4"
               >
                 Start
               </button>
-              {errorMessage && (
-                <div className="text-red-500">{errorMessage}</div>
-              )}
             </div>
             <button onClick={closeSignUpModal} className="text-white mt-4">
               Close

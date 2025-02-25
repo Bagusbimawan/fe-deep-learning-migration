@@ -1,7 +1,9 @@
 import Navbar from '@/components/Navbar/Navbar'
 import React from 'react'
+import useProtectedRoute from '../middleware'
 
 const EditProfile = () => {
+  useProtectedRoute()
   return (
     <div>
         <Navbar/>

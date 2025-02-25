@@ -6,6 +6,7 @@ import WebcamCapture from "@/components/webcapture/Webcapture";
 import Image from "next/image";
 import axios from "axios";
 import Swal from "sweetalert2";
+import useProtectedRoute from "../middleware";
 
 export default function Home() {
   const [inputMethod, setInputMethod] = useState("file");
@@ -13,6 +14,7 @@ export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  useProtectedRoute()
   // Handle file input change
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
