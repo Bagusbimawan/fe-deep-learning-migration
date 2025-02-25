@@ -13,7 +13,7 @@ export default function Home() {
   const [image, setImage] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  // protecte page route
   useProtectedRoute()
   // Handle file input change
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

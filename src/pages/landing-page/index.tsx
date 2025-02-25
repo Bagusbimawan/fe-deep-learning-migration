@@ -74,9 +74,7 @@ export default function LandingPage() {
         Username: login.username,
         Password: login.password,
       });
-
-      console.log(response.data); // Log the response to inspect its structure
-
+      
       const token = response.data.token;
       const { Username, Email, ID } = response.data.data; // Ensure this matches the response structure
 
