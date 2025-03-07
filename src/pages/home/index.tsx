@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar/Navbar";
 import Sideimage from "../../../public/sideImage.svg";
-import Logo from "../../../public/logo.svg";
+import Logo from "../../../public/logo.svg"
 import WebcamCapture from "@/components/webcapture/Webcapture";
 import Image from "next/image";
 import axios from "axios";

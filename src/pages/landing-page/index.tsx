@@ -76,11 +76,13 @@ export default function LandingPage() {
       });
       
       const token = response.data.token;
-      const { Username, Email, ID } = response.data.data; // Ensure this matches the response structure
-
+      const { Username, Email, ID, Phone } = response.data.data;
+      
+      const userData = { Username, Email, token, ID, Phone };
       // Store in Zustand
-      setUser({ Username, Email, token, ID });
-      // Also keep token in localStorage for persistence
+      setUser(userData);
+      // Store complete user data in localStorage
+      localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("jwt", token);
 
       Swal.fire({

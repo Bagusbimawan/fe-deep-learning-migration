@@ -5,21 +5,38 @@ import Profilelogo from "../../../public/profile-icon.png";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthStore } from "@/store/useAuthStore";
+import axios from "axios";
 
 const Navbar = () => {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
-  
+
   const toggleProfileModal = () => setProfileModalOpen((prev) => !prev);
 
   const handleEditAcc = () => router.push("/edit-profile");
 
   const handleLogout = async () => {
-    localStorage.removeItem("jwt");
-    logout();
-    router.push("/");
+    try {
+      const token = localStorage.getItem("jwt");
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BE_URL}/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data);
+
+      localStorage.removeItem("jwt");
+      logout();
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
