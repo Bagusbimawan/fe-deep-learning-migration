@@ -4,7 +4,6 @@ interface User {
   ID: number;
   Username: string;
   Email: string;
-  token: string;
   Phone: string;
 }
 

@@ -37,8 +37,7 @@ export default function LandingPage() {
   });
 
   const backendUrl = process.env.NEXT_PUBLIC_BE_URL;
-  // console.log(backendUrl);
-
+  
   const openLoginModal = () => setLoginModalOpen(true);
   const closeLoginModal = () => setLoginModalOpen(false);
 
@@ -53,7 +52,6 @@ export default function LandingPage() {
   const handleRegister = async () => {
     try {
       const response = await axios.post(`${backendUrl}/register`, register);
-      console.log(response.data);
       Swal.fire({
         text: "Register Success",
         icon: "success",
@@ -75,15 +73,15 @@ export default function LandingPage() {
         Password: login.password,
       });
       
-      const token = response.data.token;
+
       const { Username, Email, ID, Phone } = response.data.data;
       
-      const userData = { Username, Email, token, ID, Phone };
+      const userData = { Username, Email,  ID, Phone };
       // Store in Zustand
       setUser(userData);
       // Store complete user data in localStorage
       localStorage.setItem("user", JSON.stringify(userData));
-      localStorage.setItem("jwt", token);
+      
 
       Swal.fire({
         text: "success login",
