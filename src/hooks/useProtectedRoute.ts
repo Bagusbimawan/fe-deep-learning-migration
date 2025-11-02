@@ -16,3 +16,4 @@ const useProtectedRoute = () => {
 };
 
 export default useProtectedRoute;
+

@@ -6,7 +6,7 @@ import WebcamCapture from "@/components/webcapture/Webcapture";
 import Image from "next/image";
 import axios from "axios";
 import Swal from "sweetalert2";
-import useProtectedRoute from "../middleware";
+import useProtectedRoute from "../../hooks/useProtectedRoute";
 
 export default function Home() {
   const [inputMethod, setInputMethod] = useState("file");

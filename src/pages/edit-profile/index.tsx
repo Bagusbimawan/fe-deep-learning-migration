@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar/Navbar";
 import React, { useState } from "react";
-import useProtectedRoute from "../middleware";
+import useProtectedRoute from "../../hooks/useProtectedRoute";
 import { useAuthStore } from "@/store/useAuthStore";
 import axios from "axios";
 import Swal from "sweetalert2";
